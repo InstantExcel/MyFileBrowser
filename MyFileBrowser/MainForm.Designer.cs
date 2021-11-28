@@ -44,8 +44,8 @@ namespace MyFileBrowser
             this.big_list_box = new System.Windows.Forms.TextBox();
             this.MyFolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.AboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.button1 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -155,7 +155,7 @@ namespace MyFileBrowser
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem});
+            this.AboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1082, 24);
@@ -164,18 +164,18 @@ namespace MyFileBrowser
             // 
             // aboutToolStripMenuItem
             // 
-            this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem1});
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(155, 20);
-            this.aboutToolStripMenuItem.Text = "Image Sequence Thing V1";
+            this.AboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AboutToolStripMenuItem1});
+            this.AboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.AboutToolStripMenuItem.Text = "Image Sequence Thing V1";
+            this.AboutToolStripMenuItem.Size = new System.Drawing.Size(155, 20);
             // 
             // aboutToolStripMenuItem1
             // 
-            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
-            this.aboutToolStripMenuItem1.Text = "About";
-            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
+            this.AboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
+            this.AboutToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
+            this.AboutToolStripMenuItem1.Text = "About";
+            this.AboutToolStripMenuItem1.Click += new System.EventHandler(this.AboutToolStripMenuItem1_Click);
             // 
             // button1
             // 
@@ -217,8 +217,8 @@ namespace MyFileBrowser
         private System.Windows.Forms.ColumnHeader Seq_Name;
         private System.Windows.Forms.ColumnHeader Seq_FrameCount;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem AboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem AboutToolStripMenuItem1;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.TextBox DebugOutBox;
         private System.Windows.Forms.Button button1;

@@ -24,8 +24,8 @@ namespace MyFileBrowser
         public bool bHasFolderBeenPicked = false;
         public int MyFolderFileCount = 0;
         public int MyFolderSequenceCount = 0;
-        public List<string> MyFilesRAW;
-        public List<string> MyFilesShort;
+        public List<string> MyFilesRAW = new List<string>();
+        public List<string> MyFilesShort = new List<string>();
 
 
         public MainForm()
@@ -86,8 +86,10 @@ namespace MyFileBrowser
                 big_list_box.Text = GetFolderFilesIntoString(MyPath);
 
                 MyFilesRAW = new List<string>(big_list_box.Text.Split(','));
+                // Do list of image sequences found.. 
+                DoCompressedList();
 
-                
+
                 groupBox1.Text = "Folder " + MyPath + " searched @ " + DateTime.Now.ToString() + " found  " + MyFolderFileCount.ToString() + " items.";
                 
                 bHasFolderBeenPicked = true;
@@ -102,7 +104,7 @@ namespace MyFileBrowser
         //-------------------------------------------------------------------------------
         public string GetFolderFilesIntoString(string MyFolder)
         {
-            DirectoryInfo d = new DirectoryInfo(MyFolder); //Assuming Test is your Folder
+            DirectoryInfo d = new(MyFolder); //Assuming Test is your Folder
             MyPickedFiles = d.GetFiles("*.png"); //Getting Text files
 
             MyFolderFileCount = MyPickedFiles.Length;
@@ -134,7 +136,7 @@ namespace MyFileBrowser
             {
                 if (i == 0) {
                     LastName = MyFilesRAW[i];
-                    MyFilesShort[j] = FileNameCleaned(MyFilesRAW[i]);
+                    MyFilesShort.Add( FileNameCleaned(MyFilesRAW[i]));
                 }
 
                 if (i > 0)
@@ -157,13 +159,15 @@ namespace MyFileBrowser
                 DebugOutBox.AppendText(MyFilesShort[i]);
             }
             MyFolderSequenceCount = j;
+            MessageBox.Show("J is " + j.ToString(), "aaa");
 
         }
 
         // :: ABOOOT :::
-        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void AboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            using (AboutBox1 box = new AboutBox1())
+            AboutBox1 aboutBox1 = new AboutBox1();
+            using (AboutBox1 box = aboutBox1)
             {
                 box.ShowDialog(this);
             }
@@ -171,7 +175,8 @@ namespace MyFileBrowser
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            /// DO Nothing for now.
+            /// 
         }
 
 

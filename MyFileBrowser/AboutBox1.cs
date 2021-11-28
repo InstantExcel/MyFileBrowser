@@ -36,7 +36,7 @@ namespace MyFileBrowser
             }
         }
 
-        public string AssemblyVersion
+        public static  string AssemblyVersion
         {
             get
             {
@@ -44,7 +44,7 @@ namespace MyFileBrowser
             }
         }
 
-        public string AssemblyDescription
+        public static string AssemblyDescription
         {
             get
             {
@@ -57,7 +57,7 @@ namespace MyFileBrowser
             }
         }
 
-        public string AssemblyProduct
+        public static string AssemblyProduct
         {
             get
             {
@@ -70,7 +70,7 @@ namespace MyFileBrowser
             }
         }
 
-        public string AssemblyCopyright
+        public static string AssemblyCopyright
         {
             get
             {
@@ -83,7 +83,7 @@ namespace MyFileBrowser
             }
         }
 
-        public string AssemblyCompany
+        public static string AssemblyCompany
         {
             get
             {
