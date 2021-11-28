@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MyFileBrowser": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

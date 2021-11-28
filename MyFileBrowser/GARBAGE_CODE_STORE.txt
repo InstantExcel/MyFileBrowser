@@ -1,0 +1,64 @@
+﻿// You can set there codec, bitrate, frame rate and many other options.
+var settings = new VideoEncoderSettings(width: 1920, height: 1080, framerate: 30, codec: VideoCodec.H264);
+settings.EncoderPreset = EncoderPreset.Fast;
+settings.CRF = 17;
+using(var file = MediaBuilder.CreateContainer(@"C:\videos\example.mp4").WithVideo(settings).Create())
+{
+    while(file.Video.FramesCount < 300)
+    {
+        file.Video.AddFrame(/*Your code*/);
+    }
+}   
+
+
+
+
+        private void LoadArraysIntoListBox()
+        {
+
+            
+            List<int> TagIds = FileListCSV.Split(',').Select(int.Parse).ToList();
+
+
+            for (int i = 0; i < FileNamesFixed.Count; i++)
+            {
+
+                string[] arr = new string[2];
+                ListViewItem NewListItem;
+                //add items to ListView
+                arr[0] = FileNamesFixed[i];
+                arr[1] = FileNamesFixedID[i].ToString();
+                NewListItem = new ListViewItem(arr);
+                DataListView.Items.Add(NewListItem);
+
+            }
+
+            
+            
+        }
+        public void CSVtoList()
+        {
+         //   List<string> mylist = new List<string>(new string[] { "element1", "element2", "element3" });
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+         
+        }
+
+        private void btn_display_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+//TempString =Regex.Replace(FilenameIn, "[0-9]", "X");
+            
+
+/////////
+
+
+
+            var qsdb_load =MessageBox.Show("Wanna load "+ Folder_TotalFileCount.ToString() + " files?" , "Load images",
+                                 MessageBoxButtons.YesNo,
+                                 MessageBoxIcon.Question);
