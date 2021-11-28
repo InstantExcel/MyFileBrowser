@@ -62,3 +62,18 @@ using(var file = MediaBuilder.CreateContainer(@"C:\videos\example.mp4").WithVide
             var qsdb_load =MessageBox.Show("Wanna load "+ Folder_TotalFileCount.ToString() + " files?" , "Load images",
                                  MessageBoxButtons.YesNo,
                                  MessageBoxIcon.Question);
+
+
+
+                                 
+            if (bHasFolderBeenPicked && ItemNameCount > 0)
+            {
+                //                MessageBox.Show("I have " + ItemNameCount.ToString() + " items. load? " );
+
+                for (int i = 1; i < ItemNameCount + 1; i++)
+                {
+                    string[] row = { "Name Test" + i.ToString(), "A", "B", "C" };
+                    var listViewItem = new ListViewItem(row);
+                    DataListView.Items.Add(listViewItem);
+                }
+            }
