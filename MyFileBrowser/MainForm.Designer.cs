@@ -106,6 +106,7 @@ namespace MyFileBrowser
             this.DataListView.TabIndex = 4;
             this.DataListView.UseCompatibleStateImageBehavior = false;
             this.DataListView.View = System.Windows.Forms.View.Details;
+            this.DataListView.SelectedIndexChanged += new System.EventHandler(this.DataListView_SelectedIndexChanged);
             // 
             // Seq_Name
             // 
@@ -162,17 +163,17 @@ namespace MyFileBrowser
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // aboutToolStripMenuItem
+            // AboutToolStripMenuItem
             // 
             this.AboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AboutToolStripMenuItem1});
-            this.AboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.AboutToolStripMenuItem.Text = "Image Sequence Thing V1";
+            this.AboutToolStripMenuItem.Name = "AboutToolStripMenuItem";
             this.AboutToolStripMenuItem.Size = new System.Drawing.Size(155, 20);
+            this.AboutToolStripMenuItem.Text = "Image Sequence Thing V1";
             // 
-            // aboutToolStripMenuItem1
+            // AboutToolStripMenuItem1
             // 
-            this.AboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
+            this.AboutToolStripMenuItem1.Name = "AboutToolStripMenuItem1";
             this.AboutToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
             this.AboutToolStripMenuItem1.Text = "About";
             this.AboutToolStripMenuItem1.Click += new System.EventHandler(this.AboutToolStripMenuItem1_Click);

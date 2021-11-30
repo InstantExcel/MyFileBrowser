@@ -26,6 +26,9 @@ namespace MyFileBrowser
         public int MyFolderSequenceCount = 0;
         public List<string> MyFilesRAW = new List<string>();
         public List<string> MyFilesShort = new List<string>();
+        // Store filename reference for first / last image in sequence.
+        public List<string> MyFilesShortImageStart = new List<string>();
+        public List<string> MyFilesShortImageEnd = new List<string>();
         public List<int> MyFilesFrameCount= new List<int>();
 
 
@@ -33,6 +36,7 @@ namespace MyFileBrowser
         {
             InitializeComponent();
             MyPath = Directory.GetCurrentDirectory();
+            this.Text = "Image Sequence Tool v 0.1.0";
         }
 
         //-------------------------------------------------------
@@ -44,7 +48,7 @@ namespace MyFileBrowser
 
             if (MyFilesShort.Count > 0 && bHasFolderBeenPicked)
             {
-
+                return 0;
             }
             else
             {
@@ -62,7 +66,7 @@ namespace MyFileBrowser
         public String FileNameCleaned(string FilenameIn)
         {
             string TempString;
-            TempString = Regex.Replace(FilenameIn, "[0-9]", string.Empty);
+            TempString = Regex.Replace(FilenameIn, "[0-9]", "_"); // string.Empty);
 
             return TempString;
         }
@@ -157,36 +161,58 @@ namespace MyFileBrowser
             {
                 CurrentName = FileNameCleaned(MyFilesRAW[i]);
 
-                // If first in Sequence 
-                if (i == 0) 
+                if (CurrentName != LastName && i>0)
                 {
                     MyFilesShort.Add(CurrentName);
-                }
-                // :: If name different to last row.  ::
-                
-                if (i > 0)
-                {
-                    if (CurrentName != LastName)
+                    MyFilesShortImageStart.Add(MyFilesRAW[i]);
+                    MyFilesShortImageEnd.Add(MyFilesRAW[i]);
+                    MyFilesFrameCount.Add(1);
+
+
+                    if (i > 0)
                     {
-                        MyFilesShort.Add(CurrentName);
-                        j += 1;
-                        MyFilesFrameCount.Add(k); // FRAME COUNT??  
-                        k = 1;
+                        MyFilesShortImageStart.Add(MyFilesRAW[i]);  //  :: Store last frame for previous entry
+                        
                     }
-                    
+                    if (j > 0) 
+                    {
+                        MyFilesShortImageStart.Add(MyFilesRAW[i]);
+                        MyFilesShortImageEnd[j - 1] = MyFilesRAW[i-1];
+                        MyFilesFrameCount[j - 1] = k;               //  :: Complete frame count for previous entry 
+                        
+
+                    }; 
+
+
+                    j += 1;
+                    k = 1;
+
                 }
-                k = k + 1;
+
+                // Add for the last file in list..
+                if (i == MyFilesRAW.Count - 1)
+                {
+                    MyFilesShortImageEnd[j] = MyFilesRAW[i];
+                }
+
+                k += 1;
                 // :: Store Current to 'last' for compare next iteration ::
                 LastName = FileNameCleaned(MyFilesRAW[i]);
 
+
             }
 
-            for (var i = 0; i < MyFilesShort.Count; i++)
+
+            // write out to debug window.
+            for (var i = 0; i < MyFilesShort.Count-1; i++)
             {
-                DebugOutBox.AppendText(MyFilesShort[i] + " Was "+ MyFilesFrameCount[i] + " frames??");
+                DebugOutBox.AppendText(MyFilesShort[i] + " has "+ MyFilesFrameCount[i] + " frames using " + MyFilesShortImageStart[i]);
             }
             MyFolderSequenceCount = j;
-            MessageBox.Show("J is " + j.ToString(), "aaa");
+            
+
+            
+            //MessageBox.Show("J is " + j.ToString(), "aaa");
 
         }
 
@@ -204,9 +230,31 @@ namespace MyFileBrowser
         {
             /// DO Nothing for now.
             /// 
+            
+            for (var i = 0; i < MyFolderSequenceCount -1 ; i++)
+            {
+
+                string[] NewListItemRow = new string[4];
+                ListViewItem NewListItem;
+
+                //add items to ListView
+                NewListItemRow[0] = MyFilesShort[i];
+                NewListItemRow[1] = MyFilesFrameCount[i].ToString();
+                NewListItemRow[2] = MyFilesShortImageStart[i];
+                NewListItemRow[3] = MyFilesShortImageEnd[i];
+
+                NewListItem = new ListViewItem(NewListItemRow);
+                DataListView.Items.Add(NewListItem);
+
+            }
+            
+
         }
 
+        private void DataListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
+        }
     }
 
 }
