@@ -99,12 +99,13 @@ namespace MyFileBrowser
             if (MyFolderBrowser.ShowDialog() == DialogResult.OK)
             {
                 string MyPath = MyFolderBrowser.SelectedPath;
+                string MyDataCSV;
                 MyFolderBox.Text = MyPath;
                 // :: TEMP  -  Filenames into a csv list ?
 
-                big_list_box.Text = GetFolderFilesIntoString(MyPath);
+                MyDataCSV= GetFolderFilesIntoString(MyPath);
 
-                MyFilesRAW = new List<string>(big_list_box.Text.Split(','));
+                MyFilesRAW = new List<string>(MyDataCSV.Split(','));
                 
                 //-----------------------------------------
                 // :: Do list of image sequences found.. ::
@@ -169,11 +170,7 @@ namespace MyFileBrowser
                     MyFilesFrameCount.Add(1);
 
 
-                    if (i > 0)
-                    {
-                        MyFilesShortImageStart.Add(MyFilesRAW[i]);  //  :: Store last frame for previous entry
-                        
-                    }
+                  
                     if (j > 0) 
                     {
                         MyFilesShortImageStart.Add(MyFilesRAW[i]);
@@ -202,12 +199,13 @@ namespace MyFileBrowser
 
             }
 
-
+            /*
             // write out to debug window.
             for (var i = 0; i < MyFilesShort.Count-1; i++)
             {
                 DebugOutBox.AppendText(MyFilesShort[i] + " has "+ MyFilesFrameCount[i] + " frames using " + MyFilesShortImageStart[i]);
             }
+            */
             MyFolderSequenceCount = j;
             
 
@@ -252,6 +250,11 @@ namespace MyFileBrowser
         }
 
         private void DataListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
 
         }

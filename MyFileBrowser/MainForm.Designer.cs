@@ -47,6 +47,7 @@ namespace MyFileBrowser
             this.AboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.button1 = new System.Windows.Forms.Button();
+            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -65,6 +66,7 @@ namespace MyFileBrowser
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.vScrollBar1);
             this.groupBox1.Controls.Add(this.DebugOutBox);
             this.groupBox1.Controls.Add(this.DataListView);
             this.groupBox1.Controls.Add(this.MyFolderBox);
@@ -72,7 +74,7 @@ namespace MyFileBrowser
             this.groupBox1.Controls.Add(this.btn_load);
             this.groupBox1.Location = new System.Drawing.Point(12, 49);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1006, 483);
+            this.groupBox1.Size = new System.Drawing.Size(1179, 599);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Search Image Sequences";
@@ -81,10 +83,10 @@ namespace MyFileBrowser
             // 
             this.DebugOutBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.DebugOutBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.DebugOutBox.Location = new System.Drawing.Point(186, 22);
+            this.DebugOutBox.Location = new System.Drawing.Point(182, 509);
             this.DebugOutBox.Multiline = true;
             this.DebugOutBox.Name = "DebugOutBox";
-            this.DebugOutBox.Size = new System.Drawing.Size(173, 358);
+            this.DebugOutBox.Size = new System.Drawing.Size(149, 65);
             this.DebugOutBox.TabIndex = 5;
             // 
             // DataListView
@@ -99,10 +101,10 @@ namespace MyFileBrowser
             this.Seq_EndNum});
             this.DataListView.GroupImageList = this.imageList1;
             this.DataListView.HideSelection = false;
-            this.DataListView.Location = new System.Drawing.Point(374, 22);
+            this.DataListView.Location = new System.Drawing.Point(20, 22);
             this.DataListView.MultiSelect = false;
             this.DataListView.Name = "DataListView";
-            this.DataListView.Size = new System.Drawing.Size(609, 358);
+            this.DataListView.Size = new System.Drawing.Size(1117, 358);
             this.DataListView.TabIndex = 4;
             this.DataListView.UseCompatibleStateImageBehavior = false;
             this.DataListView.View = System.Windows.Forms.View.Details;
@@ -147,10 +149,10 @@ namespace MyFileBrowser
             // 
             this.big_list_box.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.big_list_box.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.big_list_box.Location = new System.Drawing.Point(20, 22);
+            this.big_list_box.Location = new System.Drawing.Point(20, 513);
             this.big_list_box.Multiline = true;
             this.big_list_box.Name = "big_list_box";
-            this.big_list_box.Size = new System.Drawing.Size(150, 358);
+            this.big_list_box.Size = new System.Drawing.Size(146, 61);
             this.big_list_box.TabIndex = 1;
             // 
             // menuStrip1
@@ -159,7 +161,7 @@ namespace MyFileBrowser
             this.AboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1082, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1203, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -188,11 +190,19 @@ namespace MyFileBrowser
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // vScrollBar1
+            // 
+            this.vScrollBar1.Location = new System.Drawing.Point(1140, 22);
+            this.vScrollBar1.Name = "vScrollBar1";
+            this.vScrollBar1.Size = new System.Drawing.Size(16, 358);
+            this.vScrollBar1.TabIndex = 6;
+            this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1082, 556);
+            this.ClientSize = new System.Drawing.Size(1203, 660);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
@@ -225,6 +235,7 @@ namespace MyFileBrowser
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ColumnHeader Seq_StartNum;
         private System.Windows.Forms.ColumnHeader Seq_EndNum;
+        private System.Windows.Forms.VScrollBar vScrollBar1;
     }
 }
 
