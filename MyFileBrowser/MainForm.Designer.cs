@@ -60,7 +60,7 @@ namespace MyFileBrowser
             this.btn_load.Text = "Pick Folder";
             this.btn_load.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btn_load.UseVisualStyleBackColor = true;
-            this.btn_load.Click += new System.EventHandler(this.btn_load_Click);
+            this.btn_load.Click += new System.EventHandler(this.Btn_load_Click);
             // 
             // groupBox1
             // 

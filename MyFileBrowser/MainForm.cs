@@ -20,16 +20,15 @@ namespace MyFileBrowser
         // FILEDATA
         // PATH, NAME, SEQ_NAME, MODIFIED ,TYPE
 
-        DataTable MyFileTable = new DataTable();
+        DataTable MyFileTable;//= new DataTable();
 
-        
 
         // ------ [  2   ] ----------------
         // SEQUENCE SET INFO :
         // SEQ_PATH,SEQ_NAME, FRAME COUNT , START INDEX, END INDEX ,
 
 
-        DataTable MySequences = new DataTable();
+        DataTable MySequences;// = new DataTable();
 
 
         // ------ [  3   ] ----------------
@@ -82,7 +81,7 @@ namespace MyFileBrowser
         // :: GET JUST TEXT PORTION, MASK NUMBER AS XXXX
         //-------------------------------------------------------
 
-        public String FileNameCleaned(string FilenameIn)
+        public static String FileNameCleaned(string FilenameIn)
         {
             string TempString;
             FilenameIn=Path.GetFileNameWithoutExtension(FilenameIn);
@@ -100,11 +99,11 @@ namespace MyFileBrowser
         //----------------------------------------------------
         // GET JUST NUMBER PORTION OF FILENAME ::
         //-----------------------------------------------------
-        public Int32 FileNameNumeric(string FilenameIn)
+        public static Int32 FileNameNumeric(string FilenameIn, out int TempNumB)
         {
             string TempString;
             int TempNum = 1;
-            int TempNumB;
+            
             TempString = Regex.Match(FilenameIn, @"\d+").Value;
             if (int.TryParse(TempString, out TempNumB))
             {
@@ -113,7 +112,7 @@ namespace MyFileBrowser
 
             return TempNum;
         }
-        private void btn_load_Click(object sender, EventArgs e)
+        private void Btn_load_Click(object sender, EventArgs e)
         {
             ChooseFolder();
         }
@@ -133,10 +132,10 @@ namespace MyFileBrowser
                 DataRow dRow;
                 
                 //var allowedExtensions = new[] { ".doc", ".docx", ".pdf", ".ppt", ".pptx", ".xls", ".xslx" };
-                var allowedExtensions = new[] { ".png", ".jpg", ".bmp" };
+                //var allowedExtensions = new[] { ".png", ".jpg", ".bmp" };
                 DirectoryInfo d = new(MyPath); //Assuming Test is your Folder
                 MyPickedFiles = d.GetFiles();
-                MyFolderFileCount = MyPickedFiles.Count();
+                MyFolderFileCount = MyPickedFiles.Length;
 
                 foreach (FileInfo item in MyPickedFiles)
                 {
@@ -192,11 +191,9 @@ namespace MyFileBrowser
         // ::::::::::::::::::::::::::::::::::
         private void AboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            AboutBox1 aboutBox1 = new AboutBox1();
-            using (AboutBox1 box = aboutBox1)
-            {
-                box.ShowDialog(this);
-            }
+
+            using AboutBox1 aboutBox1 = new();
+            aboutBox1.ShowDialog(this);
         }
 
 
@@ -227,11 +224,12 @@ namespace MyFileBrowser
         private void TBL_SeqInfo_Init()
         {
             // SEQ_PATH,SEQ_NAME, FRAME COUNT , START INDEX, END INDEX ,
+            DataRow dRow;
 
             MySequences = new DataTable();
-            MySequences.Columns.Add("SEQ_PATH");
+            MySequences.Columns.Add("SEQ_PATH",typeof(String));
             MySequences.Columns.Add("SEQ_NAME");
-            MySequences.Columns.Add("SEQ_FRAMES");
+            MySequences.Columns.Add("SEQ_FRAMES",typeof(Int32));
             MySequences.Columns.Add("SEQ_START_IDX");
             MySequences.Columns.Add("SEQ_END_IDX");
 
@@ -247,13 +245,29 @@ namespace MyFileBrowser
                 //MySeqData.DataSource = distinctValues;
 
                 // ITERATE OVER UNIQUE 
-                for (int i = 0; i < distinctValues.Rows.Count - 1; i++)
+                for (int i = 0; i < distinctValues.Rows.Count ; i++)
                 {
+                    string MySeqSearch = distinctValues.Rows[i]["Sequence"].ToString();
+                    var ids = MyFileTable.AsEnumerable().Where(r => r.Field<string>("Sequence") == MySeqSearch).Select(r => r.Field<String>("Name")).ToList();
+                    MessageBox.Show("My List has " + ids.Count.ToString()  + "From " + ids.First()+ " To "+ ids.Last() );
+                    /*
+                    string MySearchExp = "Sequence = "+ distinctValues.Rows[i]["Sequence"];
+                    DataRow[] foundRows;
+                    foundRows = MyFileTable.Select(MySearchExp);
+                    List<String> stringArr = new List<String>();
+                    */
 
+                    dRow = MySequences.NewRow();
+                    dRow["SEQ_PATH"] = distinctValues.Rows[i]["Path"];
+                    dRow["SEQ_NAME"] =  distinctValues.Rows[i]["Sequence"];
+                    dRow["SEQ_FRAMES"] = MyFileTable.Select("Sequence = '"+distinctValues.Rows[i]["Sequence"]+"'").Length;
+                    dRow["SEQ_START_IDX"] = ids.First();
+                    dRow["SEQ_END_IDX"] = ids.Last();
+                    MySequences.Rows.Add(dRow);
                 }
             }
-              
 
+            MySeqData.DataSource = MySequences;
 
            
             //grid.DataContext = table.DefaultView;
@@ -263,6 +277,14 @@ namespace MyFileBrowser
         private void btn_refresh_Click(object sender, EventArgs e)
         {
             TBL_SeqInfo_Init();
+        }
+
+        private void MySeqData_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridViewImageCell cell = (DataGridViewImageCell)
+            MySeqData.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            MessageBox.Show("Clicked Cell  " + cell.Value.ToString()+ " @ X:"+ e.ColumnIndex.ToString()+ " Y:"+ e.RowIndex.ToString());
+            
         }
     }
 
