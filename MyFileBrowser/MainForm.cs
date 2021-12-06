@@ -3,26 +3,56 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Data;
+using System.Linq;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace MyFileBrowser
 {
-
-    // TOdO
-
-    //  get all files into csv/list 
-    // add unique 'cleaned' into array 
-    //
 
     public partial class MainForm : Form
     {
 
         // USED FIELDS ::
 
-        // FOLDER :
+        // ------ [  1   ] ----------------
+        // FILEDATA
+        // PATH, NAME, SEQ_NAME, MODIFIED ,TYPE
+
+        DataTable MyFileTable = new DataTable();
+
+        
+
+        // ------ [  2   ] ----------------
+        // SEQUENCE SET INFO :
+        // SEQ_PATH,SEQ_NAME, FRAME COUNT , START INDEX, END INDEX ,
+
+
+        DataTable MySequences = new DataTable();
+
+
+        // ------ [  3   ] ----------------
+        // SEQUENCE RAW 
+        // SEQ_PATH,SEQ_NAME,INDEX,TYPE,OWN_FRAME_NUMBER
+
+
+
+        // CLEAN FILENAME 
+
+
+
+        // :: FOLDER // FILE INFO ::
         public string MyPath;
+        public string[] MyFileTypesStr = new string[8];
         public FileInfo[] MyPickedFiles;  // 
-        public bool bHasFolderBeenPicked = false;
+
         public int MyFolderFileCount = 0;
+        public bool bHasFolderBeenPicked = false;
+
+
+        /*
+        
         public int MyFolderSequenceCount = 0;
         public List<string> MyFilesRAW = new List<string>();
         public List<string> MyFilesShort = new List<string>();
@@ -31,33 +61,22 @@ namespace MyFileBrowser
         public List<string> MyFilesShortImageEnd = new List<string>();
         public List<int> MyFilesFrameCount= new List<int>();
 
-
+        */
         public MainForm()
         {
             InitializeComponent();
             MyPath = Directory.GetCurrentDirectory();
+            // ::Set Initial Path ::
+            MyFolderBox.Text = MyPath;
+            GetVisibleFiletypes();
+            TBL_FileInfo_Init(); // Initialise main table ::
             this.Text = "Image Sequence Tool v 0.1.0";
+            LST_Formats.SetItemChecked(2,true);           // PNG AS DEFAULT
+
+         
+
         }
 
-        //-------------------------------------------------------
-        // :: RETURN INDEX OF FILENAME 
-        //----------------------------------------------------
-        public int GetFileNameIndex(string FileNameIn, Array MyArray)
-        {
-            // SEARCH THROUGH LSIT TO GET MATCHING INDEX
-
-            if (MyFilesShort.Count > 0 && bHasFolderBeenPicked)
-            {
-                return 0;
-            }
-            else
-            {
-                
-                return -1; //ERRPR
-            }
-
-                
-        }
 
         //-------------------------------------------------------
         // :: GET JUST TEXT PORTION, MASK NUMBER AS XXXX
@@ -66,9 +85,17 @@ namespace MyFileBrowser
         public String FileNameCleaned(string FilenameIn)
         {
             string TempString;
+            FilenameIn=Path.GetFileNameWithoutExtension(FilenameIn);
             TempString = Regex.Replace(FilenameIn, "[0-9]", "_"); // string.Empty);
 
+            int freq = TempString.Count(f => (f == '_'));
+            if (freq == TempString.Length)
+            {
+                TempString ="NoName";
+            }
+            TempString = TempString.Replace("_",String.Empty);
             return TempString;
+
         }
         //----------------------------------------------------
         // GET JUST NUMBER PORTION OF FILENAME ::
@@ -90,7 +117,7 @@ namespace MyFileBrowser
         {
             ChooseFolder();
         }
-        
+
         //--------------------------------------------------------------
         // ::  Pick folder, store data into lists :::::::::::::::::::::
         //--------------------------------------------------------------
@@ -98,123 +125,71 @@ namespace MyFileBrowser
         {
             if (MyFolderBrowser.ShowDialog() == DialogResult.OK)
             {
-                string MyPath = MyFolderBrowser.SelectedPath;
-                string MyDataCSV;
+
+                TBL_FileInfo_Init(); // initialise table again;
+                MyPath = MyFolderBrowser.SelectedPath;
                 MyFolderBox.Text = MyPath;
-                // :: TEMP  -  Filenames into a csv list ?
-
-                MyDataCSV= GetFolderFilesIntoString(MyPath);
-
-                MyFilesRAW = new List<string>(MyDataCSV.Split(','));
                 
-                //-----------------------------------------
-                // :: Do list of image sequences found.. ::
-                //------------------------------------------
+                DataRow dRow;
                 
-                DoCompressedList();
+                //var allowedExtensions = new[] { ".doc", ".docx", ".pdf", ".ppt", ".pptx", ".xls", ".xslx" };
+                var allowedExtensions = new[] { ".png", ".jpg", ".bmp" };
+                DirectoryInfo d = new(MyPath); //Assuming Test is your Folder
+                MyPickedFiles = d.GetFiles();
+                MyFolderFileCount = MyPickedFiles.Count();
 
-                // :: Output / debug test... 
-
-                groupBox1.Text = "Folder " + MyPath + " searched @ " + DateTime.Now.ToString() + " found  " + MyFolderFileCount.ToString() + " items.";
+                foreach (FileInfo item in MyPickedFiles)
+                {
+                    dRow = MyFileTable.NewRow();
+                    dRow["Path"] = item.Directory.FullName;
+                    dRow["Name"] = item.Name;
+                    dRow["Sequence"] = FileNameCleaned(item.Name);
+                    dRow["Modified"] = item.LastWriteTime;
+                    dRow["Type"] = item.Extension;
+                    MyFileTable.Rows.Add(dRow);
+                 
+                }
                 
+
+
+                               // :: Output / debug test... 
+
+                LBL_Status.Text = "Folder " + MyPath + " searched @ " + DateTime.Now.ToString() + " found  " + MyFolderFileCount.ToString() + " items.";
+
                 bHasFolderBeenPicked = true;
+
+
             }
         }
-
-
-        //-------------------------------------------------------------------------------
-        //--- 
-        //---   :: GET INTO COMMA SEPARATED LIST .. .
-        //--- 
-        //-------------------------------------------------------------------------------
-        public string GetFolderFilesIntoString(string MyFolder)
+        
+        private void GetVisibleFiletypes()
         {
-            DirectoryInfo d = new(MyFolder); //Assuming Test is your Folder
-            MyPickedFiles = d.GetFiles("*.png"); //Getting Text files
 
-            MyFolderFileCount = MyPickedFiles.Length;
-
-            string str = "";
-
-            foreach (FileInfo file in MyPickedFiles)
+            int i;
+            int j = 0;
+            string s;
+            s = "Checked items:\n";
+            MyFileTypesStr=new string[LST_Formats.SelectedItems.Count];
+            
+            for (i = 0; i <= (LST_Formats.Items.Count - 1); i++)
             {
-                if (str.Length > 0)
+
+                if (LST_Formats.GetItemChecked(i))
+
                 {
-                    str = str + ", " + Environment.NewLine + file.Name;
-                }
-                else
-                {
-                    str = file.Name;
-                }
-
-            }
-
-            return str;
-        }
-
-        public void DoCompressedList()
-        {
-            string LastName="";
-            string CurrentName ;
-            int k = 1; // ::: Count of potential frames in sequence - always start with 1 :::
-            int j = 0; // ::: Iterator for Sequence block count :::
-            for (var i = 0; i < MyFilesRAW.Count-1; i++)
-            {
-                CurrentName = FileNameCleaned(MyFilesRAW[i]);
-
-                if (CurrentName != LastName && i>0)
-                {
-                    MyFilesShort.Add(CurrentName);
-                    MyFilesShortImageStart.Add(MyFilesRAW[i]);
-                    MyFilesShortImageEnd.Add(MyFilesRAW[i]);
-                    MyFilesFrameCount.Add(1);
-
-
-                  
-                    if (j > 0) 
-                    {
-                        MyFilesShortImageStart.Add(MyFilesRAW[i]);
-                        MyFilesShortImageEnd[j - 1] = MyFilesRAW[i-1];
-                        MyFilesFrameCount[j - 1] = k;               //  :: Complete frame count for previous entry 
-                        
-
-                    }; 
-
-
+                    MyFileTypesStr[j] = LST_Formats.Items[i].ToString();
                     j += 1;
-                    k = 1;
-
+                    s = s + "Item " + (i + 1).ToString() + " = " + LST_Formats.Items[i].ToString() + "\n";
                 }
-
-                // Add for the last file in list..
-                if (i == MyFilesRAW.Count - 1)
-                {
-                    MyFilesShortImageEnd[j] = MyFilesRAW[i];
-                }
-
-                k += 1;
-                // :: Store Current to 'last' for compare next iteration ::
-                LastName = FileNameCleaned(MyFilesRAW[i]);
-
-
             }
-
-            /*
-            // write out to debug window.
-            for (var i = 0; i < MyFilesShort.Count-1; i++)
-            {
-                DebugOutBox.AppendText(MyFilesShort[i] + " has "+ MyFilesFrameCount[i] + " frames using " + MyFilesShortImageStart[i]);
-            }
-            */
-            MyFolderSequenceCount = j;
             
-
-            
-            //MessageBox.Show("J is " + j.ToString(), "aaa");
-
+            LBL_Status.Text = string.Join(",", MyFileTypesStr); 
         }
 
-        // :: ABOOOT :::
+
+        // ::::::::::::::::::::::::::::::::::
+        // :: ABOUT WINDOW                :::
+        // ::::::::::::::::::::::::::::::::::
         private void AboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             AboutBox1 aboutBox1 = new AboutBox1();
@@ -224,39 +199,70 @@ namespace MyFileBrowser
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+
+
+  
+        private void LST_Formats_SelectedIndexChanged(object sender, EventArgs e)
         {
-            /// DO Nothing for now.
-            /// 
-            
-            for (var i = 0; i < MyFolderSequenceCount -1 ; i++)
+            GetVisibleFiletypes();
+        }
+
+        private void TBL_FileInfo_Init()
+        {
+            // PATH, NAME, SEQ_NAME, MODIFIED ,TYPE
+
+            MyFileTable = new DataTable();
+            MyFileTable.Columns.Add("Path");
+            MyFileTable.Columns.Add("Name");
+            MyFileTable.Columns.Add("Sequence");
+            MyFileTable.Columns.Add("Modified");
+            MyFileTable.Columns.Add("Type");
+
+            MyDataGrid.DataSource = MyFileTable;
+
+                //grid.DataContext = table.DefaultView;
+
+        }
+
+        private void TBL_SeqInfo_Init()
+        {
+            // SEQ_PATH,SEQ_NAME, FRAME COUNT , START INDEX, END INDEX ,
+
+            MySequences = new DataTable();
+            MySequences.Columns.Add("SEQ_PATH");
+            MySequences.Columns.Add("SEQ_NAME");
+            MySequences.Columns.Add("SEQ_FRAMES");
+            MySequences.Columns.Add("SEQ_START_IDX");
+            MySequences.Columns.Add("SEQ_END_IDX");
+
+            MySeqData.DataSource = MySequences;
+
+            if (MyFileTable.Rows.Count > 0)
             {
+                DataView TempView = new DataView(MyFileTable);
+                DataTable distinctValues = TempView.ToTable(true, "Path", "Sequence");
 
-                string[] NewListItemRow = new string[4];
-                ListViewItem NewListItem;
 
-                //add items to ListView
-                NewListItemRow[0] = MyFilesShort[i];
-                NewListItemRow[1] = MyFilesFrameCount[i].ToString();
-                NewListItemRow[2] = MyFilesShortImageStart[i];
-                NewListItemRow[3] = MyFilesShortImageEnd[i];
+                //temp out::
+                //MySeqData.DataSource = distinctValues;
 
-                NewListItem = new ListViewItem(NewListItemRow);
-                DataListView.Items.Add(NewListItem);
+                // ITERATE OVER UNIQUE 
+                for (int i = 0; i < distinctValues.Rows.Count - 1; i++)
+                {
 
+                }
             }
-            
+              
+
+
+           
+            //grid.DataContext = table.DefaultView;
 
         }
 
-        private void DataListView_SelectedIndexChanged(object sender, EventArgs e)
+        private void btn_refresh_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
-        {
-
+            TBL_SeqInfo_Init();
         }
     }
 
