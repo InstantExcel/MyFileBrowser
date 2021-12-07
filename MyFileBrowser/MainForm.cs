@@ -6,7 +6,9 @@ using System.Windows.Forms;
 using System.Data;
 using System.Linq;
 using System.Drawing;
+using FFMediaToolkit;
 using System.Drawing.Drawing2D;
+using FFMediaToolkit.Encoding;
 
 namespace MyFileBrowser
 {
@@ -30,6 +32,7 @@ namespace MyFileBrowser
 
         DataTable MySequences;// = new DataTable();
 
+        public int MySelectedSequenceID = 0;
 
         // ------ [  3   ] ----------------
         // SEQUENCE RAW 
@@ -47,6 +50,7 @@ namespace MyFileBrowser
         public FileInfo[] MyPickedFiles;  // 
 
         public int MyFolderFileCount = 0;
+        public int MySequenceCount = 0;
         public bool bHasFolderBeenPicked = false;
 
 
@@ -195,13 +199,13 @@ namespace MyFileBrowser
             using AboutBox1 aboutBox1 = new();
             aboutBox1.ShowDialog(this);
         }
+        // ::::::::::::::::::::::::::::::::::
+        // :: FOLDER DIALOGUE             :::
+        // ::::::::::::::::::::::::::::::::::
 
-
-
-  
-        private void LST_Formats_SelectedIndexChanged(object sender, EventArgs e)
+        private void OpenFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GetVisibleFiletypes();
+            ChooseFolder();
         }
 
         private void TBL_FileInfo_Init()
@@ -215,9 +219,8 @@ namespace MyFileBrowser
             MyFileTable.Columns.Add("Modified");
             MyFileTable.Columns.Add("Type");
 
-            MyDataGrid.DataSource = MyFileTable;
-
-                //grid.DataContext = table.DefaultView;
+            // MyDataGrid.DataSource = MyFileTable;
+            //grid.DataContext = table.DefaultView;
 
         }
 
@@ -237,7 +240,7 @@ namespace MyFileBrowser
 
             if (MyFileTable.Rows.Count > 0)
             {
-                DataView TempView = new DataView(MyFileTable);
+                DataView TempView = new(table: MyFileTable);
                 DataTable distinctValues = TempView.ToTable(true, "Path", "Sequence");
 
 
@@ -249,7 +252,7 @@ namespace MyFileBrowser
                 {
                     string MySeqSearch = distinctValues.Rows[i]["Sequence"].ToString();
                     var ids = MyFileTable.AsEnumerable().Where(r => r.Field<string>("Sequence") == MySeqSearch).Select(r => r.Field<String>("Name")).ToList();
-                    MessageBox.Show("My List has " + ids.Count.ToString()  + "From " + ids.First()+ " To "+ ids.Last() );
+                    //MessageBox.Show("My List has " + ids.Count.ToString()  + "From " + ids.First()+ " To "+ ids.Last() );
                     /*
                     string MySearchExp = "Sequence = "+ distinctValues.Rows[i]["Sequence"];
                     DataRow[] foundRows;
@@ -268,24 +271,90 @@ namespace MyFileBrowser
             }
 
             MySeqData.DataSource = MySequences;
+            
+            MySequenceCount = MySequences.Rows.Count;
 
-           
             //grid.DataContext = table.DefaultView;
 
         }
 
-        private void btn_refresh_Click(object sender, EventArgs e)
+
+        private void DoLoadPictureBoxes()
+        {
+            String MyStartImage;
+            String MyEndImage;
+            String MyPath;
+            MyPath = MySequences.Rows[MySelectedSequenceID]["SEQ_PATH"].ToString();
+            MyStartImage = MyPath+"/" + MySequences.Rows[MySelectedSequenceID]["SEQ_START_IDX"].ToString();
+            MyEndImage = MyPath + "/" + MySequences.Rows[MySelectedSequenceID]["SEQ_END_IDX"].ToString();
+
+            Image IMG_Start;
+            Image IMG_End;
+            FileStream fs;
+            fs = new System.IO.FileStream(MyStartImage, FileMode.Open, FileAccess.Read);
+            IMG_Start = Image.FromStream(fs);
+            fs.Close();
+            fs = new System.IO.FileStream(MyEndImage, FileMode.Open, FileAccess.Read);
+            IMG_End = Image.FromStream(fs);
+            fs.Close();
+            P_boxA.Image = IMG_Start.GetThumbnailImage(64, (64 * IMG_Start.Height) / IMG_Start.Width, null, IntPtr.Zero);
+            P_boxB.Image = IMG_End.GetThumbnailImage(64, (64 * IMG_End.Height) / IMG_End.Width, null, IntPtr.Zero);
+
+
+        }
+        private void BTN_refresh_Click(object sender, EventArgs e)
         {
             TBL_SeqInfo_Init();
         }
 
         private void MySeqData_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            DataGridViewImageCell cell = (DataGridViewImageCell)
+            DataGridViewTextBoxCell cell = (DataGridViewTextBoxCell)
             MySeqData.Rows[e.RowIndex].Cells[e.ColumnIndex];
             MessageBox.Show("Clicked Cell  " + cell.Value.ToString()+ " @ X:"+ e.ColumnIndex.ToString()+ " Y:"+ e.RowIndex.ToString());
+            MySelectedSequenceID = e.RowIndex;// Set Index ...
+            DoLoadPictureBoxes();
+        }
+
+        private static void UpdateStats()
+        {
             
         }
+
+        //---------------------------------------------------------------------------------------------------------------
+
+        private static void DoTempVideoOut()
+        {
+
+            // You can set there codec, bitrate, frame rate and many other options.
+            var settings = new VideoEncoderSettings(width: 1920, height: 1080, framerate: 30, codec: VideoCodec.H264);
+            settings.EncoderPreset = EncoderPreset.Fast;
+            settings.CRF = 17;
+            using (var file = MediaBuilder.CreateContainer(@"C:\videos\example.mp4").WithVideo(settings).Create())
+            {
+                /*
+                while (file.Video. < 300)
+                {
+                    file.Video.AddFrame(
+                
+                );
+                }
+            */
+            }
+        }
+
+        // TOOLSTRIP LOAD SEQUENCE BUTTONgsdgd
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            TBL_SeqInfo_Init();
+        }
+
+
+
+
+
+
+        //-------------------------------------------------------------------------------------------------------
     }
 
 }
