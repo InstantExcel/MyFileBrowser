@@ -157,10 +157,15 @@ namespace MyFileBrowser
 
                                // :: Output / debug test... 
 
-                LBL_Status.Text = "Folder " + MyPath + " searched @ " + DateTime.Now.ToString() + " found  " + MyFolderFileCount.ToString() + " items.";
+                
 
                 bHasFolderBeenPicked = true;
-
+                // :: Create  Table of raw fileInfo
+                TBL_FileInfo_Init();
+                // :: Create Table of Sequence Info
+                TBL_SeqInfo_Init();
+                /// Update Stats
+                UpdateStats();
 
             }
         }
@@ -311,14 +316,17 @@ namespace MyFileBrowser
         {
             DataGridViewTextBoxCell cell = (DataGridViewTextBoxCell)
             MySeqData.Rows[e.RowIndex].Cells[e.ColumnIndex];
-            MessageBox.Show("Clicked Cell  " + cell.Value.ToString()+ " @ X:"+ e.ColumnIndex.ToString()+ " Y:"+ e.RowIndex.ToString());
+            //MessageBox.Show("Clicked Cell  " + cell.Value.ToString()+ " @ X:"+ e.ColumnIndex.ToString()+ " Y:"+ e.RowIndex.ToString());
             MySelectedSequenceID = e.RowIndex;// Set Index ...
             DoLoadPictureBoxes();
         }
 
-        private static void UpdateStats()
+        private  void UpdateStats()
         {
-            
+            LBL_Status.Text = "Folder " + MyPath + " searched @ " + DateTime.Now.ToString() + Environment.NewLine;
+            LBL_Status.Text += "File Count" + MyFolderFileCount.ToString()+ Environment.NewLine;
+            LBL_Status.Text += "Sequence Count" + MySequenceCount.ToString() + Environment.NewLine;
+            //ch  " found  " + MyFolderFileCount.ToString() + " items.";
         }
 
         //---------------------------------------------------------------------------------------------------------------

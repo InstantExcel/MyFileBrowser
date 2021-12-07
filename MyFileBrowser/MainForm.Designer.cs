@@ -135,7 +135,7 @@ namespace MyFileBrowser
             // LBL_Status
             // 
             this.LBL_Status.AutoSize = true;
-            this.LBL_Status.Location = new System.Drawing.Point(57, 563);
+            this.LBL_Status.Location = new System.Drawing.Point(12, 24);
             this.LBL_Status.Name = "LBL_Status";
             this.LBL_Status.Size = new System.Drawing.Size(39, 15);
             this.LBL_Status.TabIndex = 7;
