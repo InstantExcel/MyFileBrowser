@@ -70,11 +70,9 @@ namespace MyFileBrowser
             InitializeComponent();
             MyPath = Directory.GetCurrentDirectory();
             // ::Set Initial Path ::
-            MyFolderBox.Text = MyPath;
-            GetVisibleFiletypes();
             TBL_FileInfo_Init(); // Initialise main table ::
             this.Text = "Image Sequence Tool v 0.1.0";
-            LST_Formats.SetItemChecked(2,true);           // PNG AS DEFAULT
+            LST_Formats.SetItemChecked(2,true);     b      // PNG AS DEFAULT
 
          
 
@@ -134,9 +132,7 @@ namespace MyFileBrowser
                 MyFolderBox.Text = MyPath;
                 
                 DataRow dRow;
-                
-                //var allowedExtensions = new[] { ".doc", ".docx", ".pdf", ".ppt", ".pptx", ".xls", ".xslx" };
-                //var allowedExtensions = new[] { ".png", ".jpg", ".bmp" };
+             
                 DirectoryInfo d = new(MyPath); //Assuming Test is your Folder
                 MyPickedFiles = d.GetFiles();
                 MyFolderFileCount = MyPickedFiles.Length;
@@ -160,8 +156,7 @@ namespace MyFileBrowser
                 
 
                 bHasFolderBeenPicked = true;
-                // :: Create  Table of raw fileInfo
-                TBL_FileInfo_Init();
+              
                 // :: Create Table of Sequence Info
                 TBL_SeqInfo_Init();
                 /// Update Stats
@@ -170,29 +165,6 @@ namespace MyFileBrowser
             }
         }
         
-        private void GetVisibleFiletypes()
-        {
-
-            int i;
-            int j = 0;
-            string s;
-            s = "Checked items:\n";
-            MyFileTypesStr=new string[LST_Formats.SelectedItems.Count];
-            
-            for (i = 0; i <= (LST_Formats.Items.Count - 1); i++)
-            {
-
-                if (LST_Formats.GetItemChecked(i))
-
-                {
-                    MyFileTypesStr[j] = LST_Formats.Items[i].ToString();
-                    j += 1;
-                    s = s + "Item " + (i + 1).ToString() + " = " + LST_Formats.Items[i].ToString() + "\n";
-                }
-            }
-            
-            LBL_Status.Text = string.Join(",", MyFileTypesStr); 
-        }
 
 
         // ::::::::::::::::::::::::::::::::::
