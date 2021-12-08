@@ -72,8 +72,6 @@ namespace MyFileBrowser
             // ::Set Initial Path ::
             TBL_FileInfo_Init(); // Initialise main table ::
             this.Text = "Image Sequence Tool v 0.1.0";
-            LST_Formats.SetItemChecked(2,true);     b      // PNG AS DEFAULT
-
          
 
         }
@@ -129,7 +127,6 @@ namespace MyFileBrowser
 
                 TBL_FileInfo_Init(); // initialise table again;
                 MyPath = MyFolderBrowser.SelectedPath;
-                MyFolderBox.Text = MyPath;
                 
                 DataRow dRow;
              
@@ -219,7 +216,19 @@ namespace MyFileBrowser
             {
                 DataView TempView = new(table: MyFileTable);
                 DataTable distinctValues = TempView.ToTable(true, "Path", "Sequence");
+                // CLEAR DOWN LISTVIEW
+                MySeqListView.Items.Clear();
+                MyLoadedImages.Dispose();
+                //MyLoadedImages = new ImageList(); // MAKE NEW
+                MyLoadedImages.ImageSize = new Size(64, 64); 
+                //-------------------------------------------------------------
+                // :: Add prototype columns ::
+                //-------------------------------------------------------------
 
+                //MySeqListView.Columns.Add("Sequence_Image");
+                MySeqListView.Columns.Add("Sequence_Name");
+                //MySeqListView.Columns.Add("Sequence_Frame_Count");
+                //MySeqListView.Columns.Add("Sequence_Index");
 
                 //temp out::
                 //MySeqData.DataSource = distinctValues;
@@ -227,26 +236,36 @@ namespace MyFileBrowser
                 // ITERATE OVER UNIQUE 
                 for (int i = 0; i < distinctValues.Rows.Count ; i++)
                 {
+                    
                     string MySeqSearch = distinctValues.Rows[i]["Sequence"].ToString();
                     var ids = MyFileTable.AsEnumerable().Where(r => r.Field<string>("Sequence") == MySeqSearch).Select(r => r.Field<String>("Name")).ToList();
-                    //MessageBox.Show("My List has " + ids.Count.ToString()  + "From " + ids.First()+ " To "+ ids.Last() );
-                    /*
-                    string MySearchExp = "Sequence = "+ distinctValues.Rows[i]["Sequence"];
-                    DataRow[] foundRows;
-                    foundRows = MyFileTable.Select(MySearchExp);
-                    List<String> stringArr = new List<String>();
-                    */
-
+                    
+                    string Tmp_Path = distinctValues.Rows[i]["Path"].ToString();
+                    string Tmp_Name = distinctValues.Rows[i]["Sequence"].ToString();
+                    int TmpFrameCount = MyFileTable.Select("Sequence = '" + distinctValues.Rows[i]["Sequence"] + "'").Length;
+                    string Tmp_SeqStartImgPath = ids.First();
+                    string Tmp_SeqEndImgPath = ids.Last();
+                    string TmpFullPath = Tmp_Path + "/" + Tmp_SeqStartImgPath;
+                    string TmpGridItem = Tmp_Name + "( " + TmpFrameCount.ToString() + " )";
                     dRow = MySequences.NewRow();
-                    dRow["SEQ_PATH"] = distinctValues.Rows[i]["Path"];
-                    dRow["SEQ_NAME"] =  distinctValues.Rows[i]["Sequence"];
-                    dRow["SEQ_FRAMES"] = MyFileTable.Select("Sequence = '"+distinctValues.Rows[i]["Sequence"]+"'").Length;
-                    dRow["SEQ_START_IDX"] = ids.First();
-                    dRow["SEQ_END_IDX"] = ids.Last();
+                    dRow["SEQ_PATH"] = Tmp_Path;//distinctValues.Rows[i]["Path"];
+                    dRow["SEQ_NAME"] = Tmp_Name;// distinctValues.Rows[i]["Sequence"];
+                    dRow["SEQ_FRAMES"] = TmpFrameCount;// MyFileTable.Select("Sequence = '"+distinctValues.Rows[i]["Sequence"]+"'").Length;
+                    dRow["SEQ_START_IDX"] = Tmp_SeqStartImgPath;// ids.First();
+                    dRow["SEQ_END_IDX"] = Tmp_SeqEndImgPath;// ids.Last();
                     MySequences.Rows.Add(dRow);
+
+                    ListViewItem TmpItem= new ListViewItem();
+                    TmpItem.ImageIndex = i;
+                    TmpItem.Text = TmpGridItem;
+                    MySeqListView.Items.Add(TmpItem);
+
+                    Image TmpWhole= Image.FromFile(TmpFullPath);
+                    Image TmpImageThumb= TmpWhole.GetThumbnailImage(64, (64 * TmpWhole.Height) / TmpWhole.Width, null, IntPtr.Zero);
+                    MyLoadedImages.Images.Add(Tmp_Name, TmpImageThumb);
                 }
             }
-
+            
             MySeqData.DataSource = MySequences;
             
             MySequenceCount = MySequences.Rows.Count;
@@ -254,7 +273,7 @@ namespace MyFileBrowser
             //grid.DataContext = table.DefaultView;
 
         }
-
+ 
 
         private void DoLoadPictureBoxes()
         {
@@ -286,7 +305,7 @@ namespace MyFileBrowser
 
         private void MySeqData_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            DataGridViewTextBoxCell cell = (DataGridViewTextBoxCell)
+            DataGridViewTextBoxCell cell= (DataGridViewTextBoxCell)
             MySeqData.Rows[e.RowIndex].Cells[e.ColumnIndex];
             //MessageBox.Show("Clicked Cell  " + cell.Value.ToString()+ " @ X:"+ e.ColumnIndex.ToString()+ " Y:"+ e.RowIndex.ToString());
             MySelectedSequenceID = e.RowIndex;// Set Index ...
@@ -323,18 +342,7 @@ namespace MyFileBrowser
             }
         }
 
-        // TOOLSTRIP LOAD SEQUENCE BUTTONgsdgd
-        private void toolStripButton1_Click(object sender, EventArgs e)
-        {
-            TBL_SeqInfo_Init();
-        }
 
-
-
-
-
-
-        //-------------------------------------------------------------------------------------------------------
     }
 
 }
