@@ -51,6 +51,7 @@ namespace MyFileBrowser
 
         public int MyFolderFileCount = 0;
         public int MySequenceCount = 0;
+        public int MyImageThumbCount = 0;
         public bool bHasFolderBeenPicked = false;
 
 
@@ -260,12 +261,10 @@ namespace MyFileBrowser
                     TmpItem.Text = TmpGridItem;
                     MySeqListView.Items.Add(TmpItem);
 
-                    Image TmpWhole= Image.FromFile(TmpFullPath);
-                    Image TmpImageThumb= TmpWhole.GetThumbnailImage(64, (64 * TmpWhole.Height) / TmpWhole.Width, null, IntPtr.Zero);
-                    MyLoadedImages.Images.Add(Tmp_Name, TmpImageThumb);
                 }
+                MyImageThumbCount = MyLoadedImages.Images.Count;
             }
-            
+            RefreshImageList();
             MySeqData.DataSource = MySequences;
             
             MySequenceCount = MySequences.Rows.Count;
@@ -274,29 +273,58 @@ namespace MyFileBrowser
 
         }
  
+        private void RefreshImageList()
+        {
+            MyLoadedImages = new ImageList();
+            int MyImgSz = 256;
+            //View.LargeIcon;
+
+            if (MySequences.Rows.Count > 0)
+            {
+                for (int i = 0; i < MySequences.Rows.Count; i++)
+                {
+                    string Tmp_Name = MySequences.Rows[i]["SEQ_NAME"].ToString();
+                    string Tmp_Path = MySequences.Rows[i]["SEQ_PATH"].ToString();
+                    string TmpFullPath = Tmp_Path + "/" + MySequences.Rows[i]["SEQ_START_IDX"].ToString();
+                    Image TmpWhole = Image.FromFile(TmpFullPath);
+                    Bitmap TmpImageThumb = new Bitmap(TmpWhole.GetThumbnailImage(192, (192* TmpWhole.Height) / TmpWhole.Width, null, IntPtr.Zero));
+                    MyLoadedImages.Images.Add(Tmp_Name, TmpImageThumb);
+                }
+
+            }
+            MyImageThumbCount = MyLoadedImages.Images.Count;
+
+            UpdateStats();
+            MyLoadedImages.ImageSize = new Size(128, 128);
+            MySeqListView.LargeImageList = MyLoadedImages;
+            MySeqListView.View= View.LargeIcon;
+            MySeqListView.Refresh();
+        }
 
         private void DoLoadPictureBoxes()
         {
             String MyStartImage;
             String MyEndImage;
             String MyPath;
-            MyPath = MySequences.Rows[MySelectedSequenceID]["SEQ_PATH"].ToString();
-            MyStartImage = MyPath+"/" + MySequences.Rows[MySelectedSequenceID]["SEQ_START_IDX"].ToString();
-            MyEndImage = MyPath + "/" + MySequences.Rows[MySelectedSequenceID]["SEQ_END_IDX"].ToString();
+            int MyImageSize = 192;
+            if (MySequences.Rows.Count -1 >= MySelectedSequenceID) {
+                MyPath = MySequences.Rows[MySelectedSequenceID]["SEQ_PATH"].ToString();
+                MyStartImage = MyPath+"/" + MySequences.Rows[MySelectedSequenceID]["SEQ_START_IDX"].ToString();
+                MyEndImage = MyPath + "/" + MySequences.Rows[MySelectedSequenceID]["SEQ_END_IDX"].ToString();
 
-            Image IMG_Start;
-            Image IMG_End;
-            FileStream fs;
-            fs = new System.IO.FileStream(MyStartImage, FileMode.Open, FileAccess.Read);
-            IMG_Start = Image.FromStream(fs);
-            fs.Close();
-            fs = new System.IO.FileStream(MyEndImage, FileMode.Open, FileAccess.Read);
-            IMG_End = Image.FromStream(fs);
-            fs.Close();
-            P_boxA.Image = IMG_Start.GetThumbnailImage(64, (64 * IMG_Start.Height) / IMG_Start.Width, null, IntPtr.Zero);
-            P_boxB.Image = IMG_End.GetThumbnailImage(64, (64 * IMG_End.Height) / IMG_End.Width, null, IntPtr.Zero);
-
-
+                Image IMG_Start;
+                Image IMG_End;
+                FileStream fs;
+                fs = new System.IO.FileStream(MyStartImage, FileMode.Open, FileAccess.Read);
+                IMG_Start = Image.FromStream(fs);
+                fs.Close();
+                fs = new System.IO.FileStream(MyEndImage, FileMode.Open, FileAccess.Read);
+                IMG_End = Image.FromStream(fs);
+                fs.Close();
+                P_boxA.Image = IMG_Start.GetThumbnailImage(MyImageSize, (MyImageSize * IMG_Start.Height) / IMG_Start.Width, null, IntPtr.Zero);
+                P_boxB.Image = IMG_End.GetThumbnailImage(MyImageSize, (MyImageSize * IMG_End.Height) / IMG_End.Width, null, IntPtr.Zero);
+                PB_TEST_LIST.Image = MyLoadedImages.Images[0];
+            }
         }
         private void BTN_refresh_Click(object sender, EventArgs e)
         {
@@ -312,11 +340,22 @@ namespace MyFileBrowser
             DoLoadPictureBoxes();
         }
 
+        private void MySeqData_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
+        {
+            // For any other operation except, StateChanged, do nothing
+            if (e.StateChanged != DataGridViewElementStates.Selected) return;
+
+            
+            //MessageBox.Show("Clicked Cell  " + cell.Value.ToString()+ " @ X:"+ e.ColumnIndex.ToString()+ " Y:"+ e.RowIndex.ToString());
+            MySelectedSequenceID = e.Row.Index;// Set Index ...
+            DoLoadPictureBoxes();
+        }
         private  void UpdateStats()
         {
             LBL_Status.Text = "Folder " + MyPath + " searched @ " + DateTime.Now.ToString() + Environment.NewLine;
             LBL_Status.Text += "File Count" + MyFolderFileCount.ToString()+ Environment.NewLine;
             LBL_Status.Text += "Sequence Count" + MySequenceCount.ToString() + Environment.NewLine;
+            LBL_Status.Text += "Image Thumb Count " + MyImageThumbCount.ToString();
             //ch  " found  " + MyFolderFileCount.ToString() + " items.";
         }
 
