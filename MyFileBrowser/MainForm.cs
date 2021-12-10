@@ -23,11 +23,12 @@ namespace MyFileBrowser
         // PATH, NAME, SEQ_NAME, MODIFIED ,TYPE
 
         DataTable MyFileTable;//= new DataTable();
+        DirectoryInfo directoryInfo;
+        
 
-
-        // ------ [  2   ] ----------------
-        // SEQUENCE SET INFO :
-        // SEQ_PATH,SEQ_NAME, FRAME COUNT , START INDEX, END INDEX ,
+    // ------ [  2   ] ----------------
+    // SEQUENCE SET INFO :
+    // SEQ_PATH,SEQ_NAME, FRAME COUNT , START INDEX, END INDEX ,
 
 
         DataTable MySequences;// = new DataTable();
@@ -46,6 +47,7 @@ namespace MyFileBrowser
 
         // :: FOLDER // FILE INFO ::
         public string MyPath;
+        public string MyPickedFolder;
         public string[] MyFileTypesStr = new string[8];
         public FileInfo[] MyPickedFiles;  // 
 
@@ -69,14 +71,97 @@ namespace MyFileBrowser
         public MainForm()
         {
             InitializeComponent();
-            MyPath = Directory.GetCurrentDirectory();
+            MyPath = @"C:\tmp"; //Directory.GetCurrentDirectory();
             // ::Set Initial Path ::
             TBL_FileInfo_Init(); // Initialise main table ::
             this.Text = "Image Sequence Tool v 0.1.0";
-         
+
+            directoryInfo = new DirectoryInfo(@"C:\tmp");
+            if (directoryInfo.Exists)
+            {
+                MyTreeView.AfterSelect += MyTreeView_AfterSelect;
+                BuildTree(directoryInfo, MyTreeView.Nodes);
+            }
+
+            UpdateStats();
 
         }
 
+
+        //-*-
+        //:   TREEEEEEEEEEEEEEE
+        // ----
+
+        private void ReloadTreeFromPath ()
+        {
+            MyTreeView.Nodes.Clear();
+            directoryInfo = new DirectoryInfo(MyPath);
+            if (directoryInfo.Exists)
+            {
+                MyTreeView.AfterSelect += MyTreeView_AfterSelect;
+                BuildTree(directoryInfo, MyTreeView.Nodes);
+            }
+
+        }
+
+        private void BuildTree(DirectoryInfo directoryInfo, TreeNodeCollection addInMe)
+        {
+            TreeNode curNode = addInMe.Add(directoryInfo.Name);
+
+        
+
+            foreach (DirectoryInfo subdir in directoryInfo.GetDirectories())
+            {
+                if (directoryInfo.Attributes.HasFlag(FileAttributes.Hidden)) continue;
+
+                BuildTree(subdir, curNode.Nodes);
+            }
+        }
+
+        private void MyTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+            //
+            /// MessageBox.Show("hheeeellooooo" + e.Node.Name + e.Node.Text);
+            //Directory.GetDirectories(Directory.GetDirectories(e.Node.Text))
+            //e.Node.Parent.Text;
+
+            TreeNode CurrentNode = e.Node;
+            string fullpath = GetKeyPath( CurrentNode);
+            
+            fullpath = ((TreeView)sender).SelectedNode.FullPath;
+            fullpath = String.Join(@"\", fullpath.Split('\\').Skip(1));
+            fullpath = MyPath +"\\" + fullpath;
+            MyPickedFolder = fullpath;
+            STS_LABEL_TEXT.Text = MyPickedFolder;
+            UpdateStats();
+
+            LoadFolder(MyPickedFolder);
+
+            //MessageBox.Show(fullpath);
+
+        }
+
+        public virtual void PickRootPath()
+        {
+            if (MyFolderBrowser.ShowDialog() == DialogResult.OK)
+            {
+                MyPath = MyFolderBrowser.SelectedPath;
+            }
+
+            ReloadTreeFromPath();
+
+        }
+
+        public string GetKeyPath(TreeNode node)
+        {
+            if (node.Parent == null)
+            {
+                return MyPath;
+            }
+
+            return GetKeyPath(node.Parent) + "//" + node.Name;
+        }
 
         //-------------------------------------------------------
         // :: GET JUST TEXT PORTION, MASK NUMBER AS XXXX
@@ -113,54 +198,51 @@ namespace MyFileBrowser
 
             return TempNum;
         }
-        private void Btn_load_Click(object sender, EventArgs e)
-        {
-            ChooseFolder();
-        }
 
         //--------------------------------------------------------------
         // ::  Pick folder, store data into lists :::::::::::::::::::::
         //--------------------------------------------------------------
-        public void ChooseFolder()
+        public void LoadFolder(string MyFolderPathInput)
         {
-            if (MyFolderBrowser.ShowDialog() == DialogResult.OK)
+            TBL_FileInfo_Init(); // initialise table again;
+
+
+            // If input supplied
+            if (MyFolderPathInput.Length > 0)
             {
 
-                TBL_FileInfo_Init(); // initialise table again;
-                MyPath = MyFolderBrowser.SelectedPath;
-                
                 DataRow dRow;
-             
-                DirectoryInfo d = new(MyPath); //Assuming Test is your Folder
-                MyPickedFiles = d.GetFiles();
+
+                DirectoryInfo d = new(MyFolderPathInput); //Assuming Test is your Folder
+                MyPickedFiles = d.GetFiles("*.png");// System.IO.Directory.GetFiles(MyFolderPathInput, "*.png");
                 MyFolderFileCount = MyPickedFiles.Length;
 
-                foreach (FileInfo item in MyPickedFiles)
-                {
-                    dRow = MyFileTable.NewRow();
-                    dRow["Path"] = item.Directory.FullName;
-                    dRow["Name"] = item.Name;
-                    dRow["Sequence"] = FileNameCleaned(item.Name);
-                    dRow["Modified"] = item.LastWriteTime;
-                    dRow["Type"] = item.Extension;
-                    MyFileTable.Rows.Add(dRow);
-                 
-                }
-                
+                    foreach (FileInfo item in MyPickedFiles)
+                    {
+                        dRow = MyFileTable.NewRow();
+                        dRow["Path"] = item.Directory.FullName;
+                        dRow["Name"] = item.Name;
+                        dRow["Sequence"] = FileNameCleaned(item.Name);
+                        dRow["Modified"] = item.LastWriteTime;
+                        dRow["Type"] = item.Extension;
+                        MyFileTable.Rows.Add(dRow);
+
+                    }
 
 
-                               // :: Output / debug test... 
 
-                
+                // :: Output / debug test... 
+
+
 
                 bHasFolderBeenPicked = true;
-              
+
                 // :: Create Table of Sequence Info
                 TBL_SeqInfo_Init();
                 /// Update Stats
                 UpdateStats();
-
             }
+            
         }
         
 
@@ -178,9 +260,19 @@ namespace MyFileBrowser
         // :: FOLDER DIALOGUE             :::
         // ::::::::::::::::::::::::::::::::::
 
+
+        // ::  MENU BAR :::
         private void OpenFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ChooseFolder();
+            PickRootPath();
+            
+        }
+
+        // :: CONTEXT MENU ON TREE :::
+        private void openFolderToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+           // MessageBox.Show(e.ToString());
+            //ChooseFolder(sender.ToString);
         }
 
         private void TBL_FileInfo_Init()
@@ -278,6 +370,13 @@ namespace MyFileBrowser
             MyLoadedImages = new ImageList();
             int MyImgSz = 256;
             //View.LargeIcon;
+            if (MyLoadedImages.Images.Count > 0)
+            {
+                MyLoadedImages.Dispose();
+                MyLoadedImages.Images.Clear();
+            }
+            
+            
 
             if (MySequences.Rows.Count > 0)
             {
@@ -287,7 +386,7 @@ namespace MyFileBrowser
                     string Tmp_Path = MySequences.Rows[i]["SEQ_PATH"].ToString();
                     string TmpFullPath = Tmp_Path + "/" + MySequences.Rows[i]["SEQ_START_IDX"].ToString();
                     Image TmpWhole = Image.FromFile(TmpFullPath);
-                    Bitmap TmpImageThumb = new Bitmap(TmpWhole.GetThumbnailImage(192, (192* TmpWhole.Height) / TmpWhole.Width, null, IntPtr.Zero));
+                    Bitmap TmpImageThumb = new Bitmap(TmpWhole.GetThumbnailImage(MyImgSz, (MyImgSz * TmpWhole.Height) / TmpWhole.Width, null, IntPtr.Zero));
                     MyLoadedImages.Images.Add(Tmp_Name, TmpImageThumb);
                 }
 
@@ -295,7 +394,7 @@ namespace MyFileBrowser
             MyImageThumbCount = MyLoadedImages.Images.Count;
 
             UpdateStats();
-            MyLoadedImages.ImageSize = new Size(128, 128);
+            MyLoadedImages.ImageSize = new Size(MyImgSz, MyImgSz);
             MySeqListView.LargeImageList = MyLoadedImages;
             MySeqListView.View= View.LargeIcon;
             MySeqListView.Refresh();
@@ -306,7 +405,7 @@ namespace MyFileBrowser
             String MyStartImage;
             String MyEndImage;
             String MyPath;
-            int MyImageSize = 192;
+            int MyImageSize = 256;
             if (MySequences.Rows.Count -1 >= MySelectedSequenceID) {
                 MyPath = MySequences.Rows[MySelectedSequenceID]["SEQ_PATH"].ToString();
                 MyStartImage = MyPath+"/" + MySequences.Rows[MySelectedSequenceID]["SEQ_START_IDX"].ToString();
@@ -323,7 +422,7 @@ namespace MyFileBrowser
                 fs.Close();
                 P_boxA.Image = IMG_Start.GetThumbnailImage(MyImageSize, (MyImageSize * IMG_Start.Height) / IMG_Start.Width, null, IntPtr.Zero);
                 P_boxB.Image = IMG_End.GetThumbnailImage(MyImageSize, (MyImageSize * IMG_End.Height) / IMG_End.Width, null, IntPtr.Zero);
-                PB_TEST_LIST.Image = MyLoadedImages.Images[0];
+                
             }
         }
         private void BTN_refresh_Click(object sender, EventArgs e)
@@ -356,6 +455,8 @@ namespace MyFileBrowser
             LBL_Status.Text += "File Count" + MyFolderFileCount.ToString()+ Environment.NewLine;
             LBL_Status.Text += "Sequence Count" + MySequenceCount.ToString() + Environment.NewLine;
             LBL_Status.Text += "Image Thumb Count " + MyImageThumbCount.ToString();
+            LBL_DIRECTORY.Text = "Directory : " + MyPath;
+            LBL_Folder.Text = "Items : " + MyPickedFolder;
             //ch  " found  " + MyFolderFileCount.ToString() + " items.";
         }
 
@@ -380,7 +481,6 @@ namespace MyFileBrowser
             */
             }
         }
-
 
     }
 
