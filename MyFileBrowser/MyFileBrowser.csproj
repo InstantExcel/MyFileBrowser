@@ -16,6 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AForge.Video" Version="2.2.5" />
     <PackageReference Include="FFMediaToolkit" Version="4.1.2" />
   </ItemGroup>
 

@@ -40,11 +40,19 @@ namespace MyFileBrowser
             this.OpenFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.AboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.IsCHK_PNG = new System.Windows.Forms.ToolStripMenuItem();
+            this.IsCHK_JPG = new System.Windows.Forms.ToolStripMenuItem();
+            this.IsCHK_GIF = new System.Windows.Forms.ToolStripMenuItem();
+            this.IsCHK_BMP = new System.Windows.Forms.ToolStripMenuItem();
             this.P_boxA = new System.Windows.Forms.PictureBox();
             this.P_boxB = new System.Windows.Forms.PictureBox();
             this.MySeqListView = new System.Windows.Forms.ListView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btn_s_open = new System.Windows.Forms.Button();
+            this.LBL_Folder = new System.Windows.Forms.Label();
             this.LBL_DIRECTORY = new System.Windows.Forms.Label();
             this.MyTreeView = new System.Windows.Forms.TreeView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -53,7 +61,11 @@ namespace MyFileBrowser
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.STS_Base = new System.Windows.Forms.StatusStrip();
             this.STS_LABEL_TEXT = new System.Windows.Forms.ToolStripStatusLabel();
-            this.LBL_Folder = new System.Windows.Forms.Label();
+            this.PROG_BAR = new System.Windows.Forms.ToolStripProgressBar();
+            this.TAB_VIDEO = new System.Windows.Forms.TabPage();
+            this.RTB_MyOutputs = new System.Windows.Forms.RichTextBox();
+            this.LBL_RichText = new System.Windows.Forms.Label();
+            this.DG_SEQ_SRC = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.MySeqData)).BeginInit();
             this.MyMainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.P_boxA)).BeginInit();
@@ -63,6 +75,8 @@ namespace MyFileBrowser
             this.contextMenuStrip1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.STS_Base.SuspendLayout();
+            this.TAB_VIDEO.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DG_SEQ_SRC)).BeginInit();
             this.SuspendLayout();
             // 
             // MySeqData
@@ -78,7 +92,7 @@ namespace MyFileBrowser
             // 
             // MyLoadedImages
             // 
-            this.MyLoadedImages.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.MyLoadedImages.ColorDepth = System.Windows.Forms.ColorDepth.Depth24Bit;
             this.MyLoadedImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("MyLoadedImages.ImageStream")));
             this.MyLoadedImages.TransparentColor = System.Drawing.Color.Transparent;
             this.MyLoadedImages.Images.SetKeyName(0, "btn_image.png");
@@ -100,7 +114,8 @@ namespace MyFileBrowser
             // MyMainMenuStrip
             // 
             this.MyMainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AboutToolStripMenuItem});
+            this.AboutToolStripMenuItem,
+            this.optionsToolStripMenuItem});
             this.MyMainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MyMainMenuStrip.Name = "MyMainMenuStrip";
             this.MyMainMenuStrip.Size = new System.Drawing.Size(1203, 24);
@@ -112,7 +127,8 @@ namespace MyFileBrowser
             this.AboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OpenFolderToolStripMenuItem,
             this.toolStripSeparator1,
-            this.AboutToolStripMenuItem1});
+            this.AboutToolStripMenuItem1,
+            this.exitToolStripMenuItem});
             this.AboutToolStripMenuItem.Name = "AboutToolStripMenuItem";
             this.AboutToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.AboutToolStripMenuItem.Text = "File";
@@ -139,6 +155,50 @@ namespace MyFileBrowser
             this.AboutToolStripMenuItem1.Text = "About";
             this.AboutToolStripMenuItem1.Click += new System.EventHandler(this.AboutToolStripMenuItem1_Click);
             // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.IsCHK_PNG,
+            this.IsCHK_JPG,
+            this.IsCHK_GIF,
+            this.IsCHK_BMP});
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsToolStripMenuItem.Text = "Options";
+            // 
+            // IsCHK_PNG
+            // 
+            this.IsCHK_PNG.Checked = true;
+            this.IsCHK_PNG.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.IsCHK_PNG.Name = "IsCHK_PNG";
+            this.IsCHK_PNG.Size = new System.Drawing.Size(99, 22);
+            this.IsCHK_PNG.Text = "PNG";
+            // 
+            // IsCHK_JPG
+            // 
+            this.IsCHK_JPG.Name = "IsCHK_JPG";
+            this.IsCHK_JPG.Size = new System.Drawing.Size(99, 22);
+            this.IsCHK_JPG.Text = "JPG";
+            // 
+            // IsCHK_GIF
+            // 
+            this.IsCHK_GIF.Name = "IsCHK_GIF";
+            this.IsCHK_GIF.Size = new System.Drawing.Size(99, 22);
+            this.IsCHK_GIF.Text = "GIF";
+            this.IsCHK_GIF.Click += new System.EventHandler(this.gFIToolStripMenuItem_Click);
+            // 
+            // IsCHK_BMP
+            // 
+            this.IsCHK_BMP.Name = "IsCHK_BMP";
+            this.IsCHK_BMP.Size = new System.Drawing.Size(99, 22);
+            this.IsCHK_BMP.Text = "BMP";
+            // 
             // P_boxA
             // 
             this.P_boxA.Location = new System.Drawing.Point(6, 334);
@@ -162,9 +222,9 @@ namespace MyFileBrowser
             this.MySeqListView.GroupImageList = this.MyLoadedImages;
             this.MySeqListView.HideSelection = false;
             this.MySeqListView.LargeImageList = this.MyLoadedImages;
-            this.MySeqListView.Location = new System.Drawing.Point(325, 27);
+            this.MySeqListView.Location = new System.Drawing.Point(340, 74);
             this.MySeqListView.Name = "MySeqListView";
-            this.MySeqListView.Size = new System.Drawing.Size(853, 453);
+            this.MySeqListView.Size = new System.Drawing.Size(816, 406);
             this.MySeqListView.SmallImageList = this.MyLoadedImages;
             this.MySeqListView.StateImageList = this.MyLoadedImages;
             this.MySeqListView.TabIndex = 12;
@@ -175,14 +235,16 @@ namespace MyFileBrowser
             // 
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.TAB_VIDEO);
             this.tabControl1.Location = new System.Drawing.Point(12, 27);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1191, 560);
+            this.tabControl1.Size = new System.Drawing.Size(1179, 560);
             this.tabControl1.TabIndex = 14;
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.btn_s_open);
             this.tabPage2.Controls.Add(this.LBL_Folder);
             this.tabPage2.Controls.Add(this.LBL_DIRECTORY);
             this.tabPage2.Controls.Add(this.MyTreeView);
@@ -190,16 +252,36 @@ namespace MyFileBrowser
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1183, 532);
+            this.tabPage2.Size = new System.Drawing.Size(1171, 532);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Simple";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // btn_s_open
+            // 
+            this.btn_s_open.Image = ((System.Drawing.Image)(resources.GetObject("btn_s_open.Image")));
+            this.btn_s_open.Location = new System.Drawing.Point(7, 24);
+            this.btn_s_open.Name = "btn_s_open";
+            this.btn_s_open.Size = new System.Drawing.Size(59, 40);
+            this.btn_s_open.TabIndex = 17;
+            this.btn_s_open.UseVisualStyleBackColor = true;
+            this.btn_s_open.Click += new System.EventHandler(this.btn_s_open_Click);
+            // 
+            // LBL_Folder
+            // 
+            this.LBL_Folder.AutoSize = true;
+            this.LBL_Folder.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
+            this.LBL_Folder.Location = new System.Drawing.Point(340, 3);
+            this.LBL_Folder.Name = "LBL_Folder";
+            this.LBL_Folder.Size = new System.Drawing.Size(53, 21);
+            this.LBL_Folder.TabIndex = 16;
+            this.LBL_Folder.Text = "label1";
             // 
             // LBL_DIRECTORY
             // 
             this.LBL_DIRECTORY.AutoSize = true;
             this.LBL_DIRECTORY.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
-            this.LBL_DIRECTORY.Location = new System.Drawing.Point(7, 3);
+            this.LBL_DIRECTORY.Location = new System.Drawing.Point(7, 0);
             this.LBL_DIRECTORY.Name = "LBL_DIRECTORY";
             this.LBL_DIRECTORY.Size = new System.Drawing.Size(53, 21);
             this.LBL_DIRECTORY.TabIndex = 15;
@@ -212,11 +294,11 @@ namespace MyFileBrowser
             this.MyTreeView.ImageIndex = 0;
             this.MyTreeView.ImageList = this.IL_FolderIconList;
             this.MyTreeView.ItemHeight = 32;
-            this.MyTreeView.Location = new System.Drawing.Point(7, 27);
+            this.MyTreeView.Location = new System.Drawing.Point(7, 74);
             this.MyTreeView.Name = "MyTreeView";
             this.MyTreeView.SelectedImageIndex = 1;
             this.MyTreeView.ShowNodeToolTips = true;
-            this.MyTreeView.Size = new System.Drawing.Size(312, 453);
+            this.MyTreeView.Size = new System.Drawing.Size(312, 406);
             this.MyTreeView.TabIndex = 13;
             // 
             // contextMenuStrip1
@@ -231,11 +313,11 @@ namespace MyFileBrowser
             this.openFolderToolStripMenuItem1.Name = "openFolderToolStripMenuItem1";
             this.openFolderToolStripMenuItem1.Size = new System.Drawing.Size(139, 22);
             this.openFolderToolStripMenuItem1.Text = "Open Folder";
-            this.openFolderToolStripMenuItem1.Click += new System.EventHandler(this.openFolderToolStripMenuItem1_Click);
+            this.openFolderToolStripMenuItem1.Click += new System.EventHandler(this.OpenFolderToolStripMenuItem1_Click);
             // 
             // IL_FolderIconList
             // 
-            this.IL_FolderIconList.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.IL_FolderIconList.ColorDepth = System.Windows.Forms.ColorDepth.Depth24Bit;
             this.IL_FolderIconList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("IL_FolderIconList.ImageStream")));
             this.IL_FolderIconList.TransparentColor = System.Drawing.Color.Transparent;
             this.IL_FolderIconList.Images.SetKeyName(0, "Folder_Closed.png");
@@ -249,7 +331,7 @@ namespace MyFileBrowser
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1183, 532);
+            this.tabPage1.Size = new System.Drawing.Size(1171, 532);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Raw Data";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -257,7 +339,8 @@ namespace MyFileBrowser
             // STS_Base
             // 
             this.STS_Base.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.STS_LABEL_TEXT});
+            this.STS_LABEL_TEXT,
+            this.PROG_BAR});
             this.STS_Base.Location = new System.Drawing.Point(0, 668);
             this.STS_Base.Name = "STS_Base";
             this.STS_Base.Size = new System.Drawing.Size(1203, 22);
@@ -270,15 +353,50 @@ namespace MyFileBrowser
             this.STS_LABEL_TEXT.Size = new System.Drawing.Size(93, 17);
             this.STS_LABEL_TEXT.Text = "STS_LABEL_TEXT";
             // 
-            // LBL_Folder
+            // PROG_BAR
             // 
-            this.LBL_Folder.AutoSize = true;
-            this.LBL_Folder.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
-            this.LBL_Folder.Location = new System.Drawing.Point(325, 3);
-            this.LBL_Folder.Name = "LBL_Folder";
-            this.LBL_Folder.Size = new System.Drawing.Size(53, 21);
-            this.LBL_Folder.TabIndex = 16;
-            this.LBL_Folder.Text = "label1";
+            this.PROG_BAR.Name = "PROG_BAR";
+            this.PROG_BAR.Size = new System.Drawing.Size(100, 16);
+            // 
+            // TAB_VIDEO
+            // 
+            this.TAB_VIDEO.Controls.Add(this.DG_SEQ_SRC);
+            this.TAB_VIDEO.Controls.Add(this.LBL_RichText);
+            this.TAB_VIDEO.Controls.Add(this.RTB_MyOutputs);
+            this.TAB_VIDEO.Location = new System.Drawing.Point(4, 24);
+            this.TAB_VIDEO.Name = "TAB_VIDEO";
+            this.TAB_VIDEO.Size = new System.Drawing.Size(1171, 532);
+            this.TAB_VIDEO.TabIndex = 2;
+            this.TAB_VIDEO.Text = "Video";
+            this.TAB_VIDEO.UseVisualStyleBackColor = true;
+            // 
+            // RTB_MyOutputs
+            // 
+            this.RTB_MyOutputs.Location = new System.Drawing.Point(13, 39);
+            this.RTB_MyOutputs.Name = "RTB_MyOutputs";
+            this.RTB_MyOutputs.Size = new System.Drawing.Size(589, 439);
+            this.RTB_MyOutputs.TabIndex = 0;
+            this.RTB_MyOutputs.Text = "";
+            // 
+            // LBL_RichText
+            // 
+            this.LBL_RichText.AutoSize = true;
+            this.LBL_RichText.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
+            this.LBL_RichText.Location = new System.Drawing.Point(13, 15);
+            this.LBL_RichText.Name = "LBL_RichText";
+            this.LBL_RichText.Size = new System.Drawing.Size(155, 21);
+            this.LBL_RichText.TabIndex = 17;
+            this.LBL_RichText.Text = "Video Frame Output";
+            // 
+            // DG_SEQ_SRC
+            // 
+            this.DG_SEQ_SRC.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DG_SEQ_SRC.Location = new System.Drawing.Point(624, 39);
+            this.DG_SEQ_SRC.Name = "DG_SEQ_SRC";
+            this.DG_SEQ_SRC.ReadOnly = true;
+            this.DG_SEQ_SRC.RowTemplate.Height = 25;
+            this.DG_SEQ_SRC.Size = new System.Drawing.Size(519, 439);
+            this.DG_SEQ_SRC.TabIndex = 18;
             // 
             // MainForm
             // 
@@ -303,6 +421,9 @@ namespace MyFileBrowser
             this.tabPage1.ResumeLayout(false);
             this.STS_Base.ResumeLayout(false);
             this.STS_Base.PerformLayout();
+            this.TAB_VIDEO.ResumeLayout(false);
+            this.TAB_VIDEO.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DG_SEQ_SRC)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -332,6 +453,18 @@ namespace MyFileBrowser
         private System.Windows.Forms.ToolStripStatusLabel STS_LABEL_TEXT;
         private System.Windows.Forms.Label LBL_DIRECTORY;
         private System.Windows.Forms.Label LBL_Folder;
+        private System.Windows.Forms.Button btn_s_open;
+        private System.Windows.Forms.ToolStripProgressBar PROG_BAR;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem IsCHK_PNG;
+        private System.Windows.Forms.ToolStripMenuItem IsCHK_JPG;
+        private System.Windows.Forms.ToolStripMenuItem IsCHK_GIF;
+        private System.Windows.Forms.ToolStripMenuItem IsCHK_BMP;
+        private System.Windows.Forms.TabPage TAB_VIDEO;
+        private System.Windows.Forms.RichTextBox RTB_MyOutputs;
+        private System.Windows.Forms.Label LBL_RichText;
+        private System.Windows.Forms.DataGridView DG_SEQ_SRC;
     }
 }
 

@@ -265,16 +265,15 @@ namespace MyFileBrowser
         private void OpenFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PickRootPath();
-            
+        }
+
+        private void btn_s_open_Click(object sender, EventArgs e)
+        {
+            PickRootPath();
         }
 
         // :: CONTEXT MENU ON TREE :::
-        private void openFolderToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-           // MessageBox.Show(e.ToString());
-            //ChooseFolder(sender.ToString);
-        }
-
+   
         private void TBL_FileInfo_Init()
         {
             // PATH, NAME, SEQ_NAME, MODIFIED ,TYPE
@@ -386,7 +385,7 @@ namespace MyFileBrowser
                     string Tmp_Path = MySequences.Rows[i]["SEQ_PATH"].ToString();
                     string TmpFullPath = Tmp_Path + "/" + MySequences.Rows[i]["SEQ_START_IDX"].ToString();
                     Image TmpWhole = Image.FromFile(TmpFullPath);
-                    Bitmap TmpImageThumb = new Bitmap(TmpWhole.GetThumbnailImage(MyImgSz, (MyImgSz * TmpWhole.Height) / TmpWhole.Width, null, IntPtr.Zero));
+                    Bitmap TmpImageThumb = new Bitmap(TmpWhole.GetThumbnailImage(MyImgSz * TmpWhole.Width, (MyImgSz * TmpWhole.Height) / TmpWhole.Width, null, IntPtr.Zero));
                     MyLoadedImages.Images.Add(Tmp_Name, TmpImageThumb);
                 }
 
@@ -482,6 +481,10 @@ namespace MyFileBrowser
             }
         }
 
+        private void gFIToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
 }
